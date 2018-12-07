@@ -1,27 +1,28 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const moment = require('moment');
 const { connect, Schema, model } = require('mongoose');
 let { Promise } = require('mongoose');
 
-const get_kelly_criterion = (r, o) => {
-  r = parseFloat(r)/100
-  o = parseFloat(o) - 1
-  return Math.round(((r * o - (1 - r))/o) * 100) / 100
+const get_kelly_criterion = (rate, odd) => {
+  rate = parseFloat(rate)/100
+  odd = parseFloat(odd) - 1
+  return Math.round(((rate * odd - (1 - rate))/odd) * 100) / 100
 };
 
-const get_predict_rate = (p, hr, dr, ar) => {
-  switch(p) {
+const get_predict_rate = (predict, home_rate, draw_rate, away_rate) => {
+  switch(predict) {
     case '1':
-        return hr;
+        return home_rate;
     case 'X':
-        return dr;
+        return draw_rate;
     case '2':
-        return ar;
+        return away_rate;
   };
 };
 
-const get_timestamp = (s) => {
-  return new Date(s).getTime()/1000
+const get_time = (text) => {
+  return moment.utc(text, "DD/MM/YYYY hh:mm").format('X') - 3600;
 }
 
 Promise = global.Promise;
@@ -29,10 +30,11 @@ connect('mongodb://localhost:27017/ForebetTest', { useNewUrlParser: true });
 
 const MatchSchema = new Schema({
   forebetId:          { type: Number, required: true, unique: true },
+  forebetLink:        String,
   league:             String,
   homeTeam:           String,
   awayTeam:           String,
-  kickOffTime:        Date,
+  kickOffTime:        Number,
   forebetPredict1:    Number,
   forebetPredictX:    Number,
   forebetPredict2:    Number,
@@ -40,6 +42,8 @@ const MatchSchema = new Schema({
   Odds:               Number,
   kellyCriterion:     Number,
   finished:           { type: Boolean, default: false },
+  valueBet:           { type: Boolean, default: false },
+  result:             Boolean,
   homeResult:         Number,
   awayResult:         Number
 });
@@ -66,10 +70,11 @@ request('https://www.forebet.com/en/football-tips-and-predictions-for-today', (e
       if ($(element).hasClass('fav_icon') || $(element).hasClass('tr_0') || $(element).hasClass('tr_1')) {
         const match = new Match({
           forebetId:          parseInt($(element).find('.fav_icon').attr('id')),
+          forebetLink:        $(element).find('a').attr('href'),
           league:             $(element).find('.shortTag').text(),
           homeTeam:           $(element).find('.homeTeam').text(),
           awayTeam:           $(element).find('.awayTeam').text(),
-          kickOffTime:        new Date(get_timestamp($(element).find('.date_bah').text())*1000),
+          kickOffTime:        get_time($(element).find('.date_bah').text()),
           forebetPredict1:    parseInt($($(element).find('td')['1']).text()),
           forebetPredictX:    parseInt($($(element).find('td')['2']).text()),
           forebetPredict2:    parseInt($($(element).find('td')['3']).text()),
@@ -84,18 +89,6 @@ request('https://www.forebet.com/en/football-tips-and-predictions-for-today', (e
              console.log('match updated: ', match);
           }
         });
-        // console.log(index);
-        // console.log($(element).find('.fav_icon').attr('id'));
-        // console.log($(element).find('.shortTag').text());
-        // console.log($(element).find('.homeTeam').text());
-        // console.log($(element).find('.awayTeam').text());
-        // console.log($(element).find('.date_bah').text());
-        // console.log($($(element).find('td')['1']).text());
-        // console.log($($(element).find('td')['2']).text());
-        // console.log($($(element).find('td')['3']).text());
-        // console.log($(element).find('.predict').text());
-        // console.log($($(element).find('.odds2')['0']).text());
-        // console.log(get_kelly_criterion($($(element).find('td')['3']).text(),$($(element).find('.odds2')['0']).text()))
       }
     });
   };
