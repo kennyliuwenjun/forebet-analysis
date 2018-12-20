@@ -1,5 +1,7 @@
 const moment = require('moment');
 
+const FOREBET_DOMAIN = 'https://www.forebet.com';
+
 const get_kelly_criterion = (rate, odd) => {
   rate = parseFloat(rate)/100
   odd = parseFloat(odd) - 1
@@ -21,4 +23,18 @@ const get_time = (text) => {
   return moment.utc(text, "DD/MM/YYYY hh:mm").format('X') - 3600;
 };
 
-module.exports = { get_kelly_criterion, get_predict_rate, get_time };
+const getForebetResult = (match) => {
+  switch (match.forebetPick) {
+    case '1':
+      match.forebetResult = match.homeResult > match.awayResult ? 1 : 2;
+      break;
+    case 'X':
+      match.forebetResult = match.homeResult == match.awayResult ? 1 : 2;
+      break;
+    case '2':
+      match.forebetResult = match.homeResult < match.awayResult ? 1 : 2;
+      break;
+  }
+}
+
+module.exports = { FOREBET_DOMAIN, get_kelly_criterion, get_predict_rate, get_time, getForebetResult };

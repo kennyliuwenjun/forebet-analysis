@@ -9,9 +9,9 @@ const MatchSchema = new Schema({
   homeTeam:           String,
   awayTeam:           String,
   kickOffTime:        Number,
-  forebetPredict1:    Number,
-  forebetPredictX:    Number,
-  forebetPredict2:    Number,
+  homeWinPredict:     Number,
+  drawPredict:        Number,
+  awayWinPredict:     Number,
   forebetPick:        String,
   Odds:               Number,
   kellyCriterion:     Number,
@@ -19,7 +19,8 @@ const MatchSchema = new Schema({
   valueBet:           { type: Boolean, default: false },
   forebetResult:      { type: Number, default: 0 },
   homeResult:         { type: Number, default: 0 },
-  awayResult:         { type: Number, default: 0 }
+  awayResult:         { type: Number, default: 0 },
+  betSettled:         { type: Boolean, default: false }
 });
 
 const Match = mongoose.model('Match', MatchSchema);
