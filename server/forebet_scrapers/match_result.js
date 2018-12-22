@@ -8,17 +8,17 @@ async function getMatches( match ){
   const element = $($('.schema')['0']).find('tbody > tr')[3];
   if ($(element).hasClass('fav_icon') || $(element).hasClass('tr_0') || $(element).hasClass('tr_1')) {
     if ($(element).find('.scoreLnk').text().trim() == 'FT') {
-      match.finished = true
       match.homeResult = $(element).find('.lscrsp').text().trim()[0];
       match.awayResult = $(element).find('.lscrsp').text().trim()[4];
       getForebetResult(match);
       match = await match.save();
-      return `Match saved ${match.forebetResult}:${match.forebetLink}`
+      return `Match saved ${match.resultStatus}:${match.forebetLink}. ${new Date(match.kickOffTime*1000).toLocaleString()}`
     } else if ($(element).find('.lmin_td').text().trim() == 'Aban.' || $(element).find('.lmin_td').text().trim() == 'Postp.'){
-      match = await match.remove()
-      return `Match removed: ${match.forebetLink}`
+      match.resultStatus = 3;
+      match = await match.save();
+      return `Match cancelled: ${match.forebetLink}. ${new Date(match.kickOffTime*1000).toLocaleString()}`
     } else {
-      return `Match not finished: ${match.forebetLink}`
+      return `Match not finished: ${match.forebetLink}. ${new Date(match.kickOffTime*1000).toLocaleString()}`
     }
   }
 };

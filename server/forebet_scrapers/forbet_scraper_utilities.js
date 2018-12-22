@@ -8,14 +8,14 @@ const get_kelly_criterion = (rate, odd) => {
   return Math.round(((rate * odd - (1 - rate))/odd) * 100) / 100
 };
 
-const get_predict_rate = (predict, home_rate, draw_rate, away_rate) => {
-  switch(predict) {
+function get_predict_rate(match){
+  switch(match.forebetPick) {
     case '1':
-        return home_rate;
+        return match.homeWinPredict;
     case 'X':
-        return draw_rate;
+        return match.drawPredict;
     case '2':
-        return away_rate;
+        return match.awayWinPredict;
   };
 };
 
@@ -26,13 +26,13 @@ const get_time = (text) => {
 const getForebetResult = (match) => {
   switch (match.forebetPick) {
     case '1':
-      match.forebetResult = match.homeResult > match.awayResult ? 1 : 2;
+      match.resultStatus = match.homeResult > match.awayResult ? 1 : 2;
       break;
     case 'X':
-      match.forebetResult = match.homeResult == match.awayResult ? 1 : 2;
+      match.resultStatus = match.homeResult == match.awayResult ? 1 : 2;
       break;
     case '2':
-      match.forebetResult = match.homeResult < match.awayResult ? 1 : 2;
+      match.resultStatus = match.homeResult < match.awayResult ? 1 : 2;
       break;
   }
 }

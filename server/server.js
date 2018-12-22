@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require('request');
+const cron = require('node-cron');
 const promiseRequest = require('request-promise');
 const cheerio = require('cheerio');
 const { mongoose } = require('./db/mongoose');
@@ -12,17 +12,17 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/fetch_value_bet_matches', (req ,res) => {
-  value_bets_scrap((results)=> {
-    res.send(results)
-  });
+app.post('/fetch_value_bet_matches', async (req ,res) => {
+  console.log(`fetch_value_bet_matches:${new Date()}`);
+  const result = await value_bets_scrap()
+  res.send(result);
 });
 
 
 app.post('/fetch_match_result', (req ,res) => {
   console.log(`fetch_match_result:${new Date()}`);
   Match.find({
-    finished: false
+    resultStatus: 0
   }).then(async matches => {
     const promises = matches.map(async (match,i) => {
       return getMatches(match,i);
@@ -30,6 +30,10 @@ app.post('/fetch_match_result', (req ,res) => {
     const results = await Promise.all(promises);
     res.send(results);
   })
+});
+
+cron.schedule('*/1 * * * * *', () => {
+  console.log('running a task every minute');
 });
 
 

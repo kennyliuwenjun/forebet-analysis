@@ -15,12 +15,11 @@ const MatchSchema = new Schema({
   forebetPick:        String,
   Odds:               Number,
   kellyCriterion:     Number,
-  finished:           { type: Boolean, default: false },
   valueBet:           { type: Boolean, default: false },
-  forebetResult:      { type: Number, default: 0 },
+  resultStatus:       { type: Number, default: 0 },  //0: not start, 1: predcit win, 2: precit lost, 3: match cancelled
   homeResult:         { type: Number, default: 0 },
   awayResult:         { type: Number, default: 0 },
-  betSettled:         { type: Boolean, default: false }
+  betPlaced:          { type: Boolean, default: false }
 });
 
 const Match = mongoose.model('Match', MatchSchema);

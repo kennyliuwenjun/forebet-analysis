@@ -20,8 +20,13 @@
 //     match.save();
 //   })
 // })
-
-let time = new Date().
-for (var i = 0; i < 100; i++) {
-  array[i]
+let time = 1545307200000
+let chinaOffSet = 60*60*3*1000
+// time -= chinaOffSet
+for (let i = 0; i < 100; i++) {
+  console.log('------------')
+  console.log(new Date(time).toLocaleString());
+  time+=25200000
+  console.log(new Date(time).toLocaleString())
+  time+=43200000
 }
